@@ -131,9 +131,9 @@ install_tomcat(){
   print_info "Searching for correct Apache URL"
   for i in {01..75}
   do
-    local test=`curl -Is http://www-us.apache.org/dist/tomcat/tomcat-8/v8.5."$i"/bin/apache-tomcat-8.5."$i".tar.gz | head -n 1`
+    local test=`curl -Is http://mirrors.ibiblio.org/apache/tomcat/tomcat-8/v8.5."$i"/bin/apache-tomcat-8.5."$i".tar.gz | head -n 1`
     if [[ $test == *200* ]]; then
-      apacheurl="http://www-us.apache.org/dist/tomcat/tomcat-8/v8.5."$i"/bin/apache-tomcat-8.5."$i".tar.gz"
+      apacheurl="http://mirrors.ibiblio.org/apache/tomcat/tomcat-8/v8.5."$i"/bin/apache-tomcat-8.5."$i".tar.gz"
       print_success "URL Found: $apacheurl "
       break
     fi
@@ -307,6 +307,7 @@ generate_guacd_certs(){
   print_info "Generating self signed certificates for Guacamole"
   openssl req -x509 -nodes -days 365 -newkey rsa:4096 -keyout /opt/secrets/key.pem -out /opt/secrets/cert.crt -config guac-ssl.cnf > /dev/null 2>&1
   keytool -import -alias psmgw_guacd_cert -keystore /opt/secrets/keystore -trustcacerts -file /opt/secrets/cert.crt -storepass "Cyberark1" -noprompt >> html5gw.log 2>&1
+  chown -R psmgwuser:psmgwuser /opt/secrets/
   # Verify Keytool Import was successful
   testkey "/opt/secrets/keystore" "psmgw_guacd_cert" "Cyberark1"
   print_success "Guacamole certificates imported into Apache Keystore" 
